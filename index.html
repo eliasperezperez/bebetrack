@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BebéTrack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --warm: #F2EBE0;
+    --sand: #E8D9C5;
+    --clay: #C4A882;
+    --rust: #C4622D;
+    --rust-light: #E8896A;
+    --forest: #3A5744;
+    --forest-light: #5C8870;
+    --night: #1A1F1C;
+    --muted: #7A8078;
+    --white: #FFFFFF;
+    --shadow: rgba(58,87,68,0.12);
+    --radius: 20px;
+    --radius-sm: 12px;
+  }
+
+- { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+font-family: ‘DM Sans’, sans-serif;
+background: var(–cream);
+color: var(–night);
+min-height: 100dvh;
+max-width: 430px;
+margin: 0 auto;
+position: relative;
+overflow-x: hidden;
+}
+
+/* TOP BAR */
+.topbar {
+background: var(–forest);
+padding: 16px 20px 14px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+position: sticky;
+top: 0;
+z-index: 100;
+}
+.topbar-left h1 {
+font-family: ‘Fraunces’, serif;
+font-size: 22px;
+color: var(–cream);
+font-weight: 600;
+letter-spacing: -0.5px;
+}
+.topbar-left p {
+font-size: 11px;
+color: var(–sand);
+margin-top: 1px;
+font-weight: 300;
+}
+.age-badge {
+background: var(–rust);
+color: white;
+font-size: 11px;
+font-weight: 500;
+padding: 5px 10px;
+border-radius: 20px;
+font-family: ‘DM Sans’, sans-serif;
+}
+
+/* SCROLL CONTENT */
+.content {
+padding: 0 0 100px;
+}
+
+/* ALERT BANNER */
+.alert-banner {
+margin: 14px 16px 0;
+background: #FFF3E0;
+border: 1.5px solid #FFB74D;
+border-radius: var(–radius-sm);
+padding: 10px 14px;
+font-size: 13px;
+color: #E65100;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.alert-banner.hidden { display: none; }
+
+/* SECTION */
+.section {
+padding: 18px 16px 0;
+}
+.section-title {
+font-family: ‘Fraunces’, serif;
+font-size: 13px;
+color: var(–muted);
+text-transform: uppercase;
+letter-spacing: 1.5px;
+margin-bottom: 10px;
+font-weight: 300;
+}
+
+/* STAT CARDS ROW */
+.stats-row {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+}
+.stats-row.three { grid-template-columns: 1fr 1fr 1fr; }
+
+.stat-card {
+background: var(–white);
+border-radius: var(–radius);
+padding: 16px 14px;
+box-shadow: 0 2px 12px var(–shadow);
+position: relative;
+overflow: hidden;
+}
+.stat-card::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 3px;
+}
+.stat-card.green::before { background: var(–forest); }
+.stat-card.rust::before { background: var(–rust); }
+.stat-card.clay::before { background: var(–clay); }
+.stat-card.blue::before { background: #5B9BD5; }
+
+.stat-emoji { font-size: 22px; margin-bottom: 6px; }
+.stat-value {
+font-family: ‘Fraunces’, serif;
+font-size: 26px;
+font-weight: 600;
+color: var(–night);
+line-height: 1;
+}
+.stat-value.small { font-size: 18px; }
+.stat-label {
+font-size: 11px;
+color: var(–muted);
+margin-top: 3px;
+font-weight: 400;
+}
+.stat-sub {
+font-size: 10px;
+color: var(–clay);
+margin-top: 2px;
+}
+
+/* ACTION CARDS */
+.action-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+}
+
+.action-card {
+background: var(–white);
+border-radius: var(–radius);
+padding: 18px 14px;
+box-shadow: 0 2px 12px var(–shadow);
+border: none;
+cursor: pointer;
+text-align: left;
+transition: transform 0.15s, box-shadow 0.15s;
+-webkit-tap-highlight-color: transparent;
+}
+.action-card:active { transform: scale(0.97); }
+.action-card .ac-icon { font-size: 28px; margin-bottom: 8px; }
+.action-card .ac-title {
+font-family: ‘Fraunces’, serif;
+font-size: 15px;
+font-weight: 600;
+color: var(–night);
+line-height: 1.2;
+}
+.action-card .ac-sub {
+font-size: 11px;
+color: var(–muted);
+margin-top: 3px;
+}
+.action-card.forest-bg { background: var(–forest); }
+.action-card.forest-bg .ac-title { color: var(–cream); }
+.action-card.forest-bg .ac-sub { color: var(–sand); }
+.action-card.rust-bg { background: var(–rust); }
+.action-card.rust-bg .ac-title { color: white; }
+.action-card.rust-bg .ac-sub { color: rgba(255,255,255,0.7); }
+
+/* LOG LIST */
+.log-list { display: flex; flex-direction: column; gap: 8px; }
+.log-item {
+background: var(–white);
+border-radius: var(–radius-sm);
+padding: 12px 14px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+box-shadow: 0 1px 6px var(–shadow);
+}
+.log-item-left { display: flex; align-items: center; gap: 10px; }
+.log-icon {
+width: 36px; height: 36px;
+border-radius: 10px;
+display: flex; align-items: center; justify-content: center;
+font-size: 17px;
+flex-shrink: 0;
+}
+.log-icon.food { background: #E8F5E9; }
+.log-icon.diaper { background: #FFF8E1; }
+.log-icon.sleep { background: #E3F2FD; }
+.log-title { font-size: 13px; font-weight: 500; color: var(–night); }
+.log-time { font-size: 11px; color: var(–muted); margin-top: 1px; }
+.log-right { font-size: 12px; color: var(–muted); text-align: right; }
+.log-delete {
+background: none; border: none; cursor: pointer;
+font-size: 16px; color: var(–clay); padding: 4px;
+margin-left: 6px;
+}
+
+/* BOTTOM NAV */
+.bottom-nav {
+position: fixed;
+bottom: 0; left: 50%;
+transform: translateX(-50%);
+width: 100%;
+max-width: 430px;
+background: var(–white);
+border-top: 1px solid var(–sand);
+display: flex;
+padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+z-index: 200;
+}
+.nav-btn {
+flex: 1;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 3px;
+background: none;
+border: none;
+cursor: pointer;
+padding: 6px 0;
+-webkit-tap-highlight-color: transparent;
+}
+.nav-btn .nav-icon { font-size: 22px; }
+.nav-btn .nav-label {
+font-size: 10px;
+color: var(–muted);
+font-family: ‘DM Sans’, sans-serif;
+font-weight: 400;
+}
+.nav-btn.active .nav-label { color: var(–forest); font-weight: 500; }
+.nav-btn.active .nav-icon { filter: saturate(1.5); }
+
+/* PAGES */
+.page { display: none; }
+.page.active { display: block; }
+
+/* MODAL */
+.modal-overlay {
+position: fixed;
+inset: 0;
+background: rgba(26,31,28,0.6);
+z-index: 300;
+display: flex;
+align-items: flex-end;
+justify-content: center;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.25s;
+}
+.modal-overlay.open {
+opacity: 1;
+pointer-events: all;
+}
+.modal {
+background: var(–white);
+border-radius: 28px 28px 0 0;
+padding: 24px 20px 40px;
+width: 100%;
+max-width: 430px;
+transform: translateY(40px);
+transition: transform 0.25s ease;
+max-height: 90dvh;
+overflow-y: auto;
+}
+.modal-overlay.open .modal {
+transform: translateY(0);
+}
+.modal-handle {
+width: 40px; height: 4px;
+background: var(–sand);
+border-radius: 2px;
+margin: 0 auto 20px;
+}
+.modal-title {
+font-family: ‘Fraunces’, serif;
+font-size: 20px;
+font-weight: 600;
+margin-bottom: 18px;
+color: var(–night);
+}
+
+/* FORM ELEMENTS */
+.form-group { margin-bottom: 16px; }
+.form-label {
+font-size: 12px;
+font-weight: 500;
+color: var(–muted);
+text-transform: uppercase;
+letter-spacing: 0.8px;
+margin-bottom: 6px;
+display: block;
+}
+.form-input, .form-select {
+width: 100%;
+padding: 14px 16px;
+border: 1.5px solid var(–sand);
+border-radius: var(–radius-sm);
+font-size: 16px;
+font-family: ‘DM Sans’, sans-serif;
+color: var(–night);
+background: var(–cream);
+outline: none;
+-webkit-appearance: none;
+}
+.form-input:focus, .form-select:focus {
+border-color: var(–forest);
+background: white;
+}
+
+.toggle-group {
+display: flex;
+gap: 8px;
+flex-wrap: wrap;
+}
+.toggle-btn {
+flex: 1;
+min-width: 70px;
+padding: 12px 8px;
+border: 1.5px solid var(–sand);
+border-radius: var(–radius-sm);
+background: var(–cream);
+font-size: 13px;
+font-family: ‘DM Sans’, sans-serif;
+color: var(–muted);
+cursor: pointer;
+text-align: center;
+transition: all 0.15s;
+}
+.toggle-btn.active {
+background: var(–forest);
+border-color: var(–forest);
+color: white;
+font-weight: 500;
+}
+
+.btn-primary {
+width: 100%;
+padding: 16px;
+background: var(–forest);
+color: white;
+border: none;
+border-radius: var(–radius-sm);
+font-size: 16px;
+font-family: ‘DM Sans’, sans-serif;
+font-weight: 500;
+cursor: pointer;
+margin-top: 8px;
+transition: background 0.15s;
+}
+.btn-primary:active { background: #2d4636; }
+
+.btn-secondary {
+width: 100%;
+padding: 14px;
+background: transparent;
+color: var(–muted);
+border: 1.5px solid var(–sand);
+border-radius: var(–radius-sm);
+font-size: 14px;
+font-family: ‘DM Sans’, sans-serif;
+cursor: pointer;
+margin-top: 8px;
+}
+
+/* INFO CARD */
+.info-card {
+background: var(–warm);
+border-radius: var(–radius-sm);
+padding: 14px;
+border-left: 3px solid var(–clay);
+}
+.info-card p {
+font-size: 13px;
+color: var(–night);
+line-height: 1.5;
+}
+.info-card strong { color: var(–rust); }
+
+/* VACCINE ITEM */
+.vaccine-item {
+background: var(–white);
+border-radius: var(–radius-sm);
+padding: 14px;
+display: flex;
+align-items: center;
+gap: 12px;
+box-shadow: 0 1px 6px var(–shadow);
+margin-bottom: 8px;
+}
+.vax-dot {
+width: 12px; height: 12px;
+border-radius: 50%;
+flex-shrink: 0;
+}
+.vax-dot.done { background: var(–forest); }
+.vax-dot.next { background: var(–rust); }
+.vax-dot.upcoming { background: var(–clay); }
+.vax-dot.future { background: var(–sand); border: 1.5px solid var(–clay); }
+.vax-info { flex: 1; }
+.vax-name { font-size: 13px; font-weight: 500; color: var(–night); }
+.vax-date { font-size: 11px; color: var(–muted); margin-top: 2px; }
+.vax-check {
+background: none; border: 1.5px solid var(–sand);
+border-radius: 8px; padding: 4px 10px;
+font-size: 11px; color: var(–muted); cursor: pointer;
+}
+.vax-check.done {
+background: var(–forest); border-color: var(–forest);
+color: white;
+}
+
+/* SLEEP TIMELINE */
+.sleep-bar-wrap {
+background: var(–warm);
+border-radius: var(–radius-sm);
+padding: 14px;
+margin-bottom: 8px;
+}
+.sleep-bar-header {
+display: flex;
+justify-content: space-between;
+font-size: 12px;
+color: var(–muted);
+margin-bottom: 8px;
+}
+.sleep-bar-track {
+height: 20px;
+background: var(–sand);
+border-radius: 10px;
+position: relative;
+overflow: hidden;
+}
+.sleep-segment {
+position: absolute;
+height: 100%;
+border-radius: 10px;
+background: var(–forest);
+opacity: 0.8;
+}
+
+/* GROWTH CHART SIMPLE */
+.percentile-bar-wrap {
+background: var(–white);
+border-radius: var(–radius-sm);
+padding: 14px;
+box-shadow: 0 1px 6px var(–shadow);
+margin-bottom: 10px;
+}
+.percentile-label {
+font-size: 12px; color: var(–muted); margin-bottom: 8px;
+display: flex; justify-content: space-between;
+}
+.percentile-track {
+height: 10px;
+background: var(–warm);
+border-radius: 5px;
+position: relative;
+margin-bottom: 4px;
+}
+.percentile-fill {
+height: 100%;
+border-radius: 5px;
+background: linear-gradient(90deg, var(–rust-light), var(–forest));
+}
+.percentile-markers {
+display: flex;
+justify-content: space-between;
+font-size: 9px;
+color: var(–clay);
+padding: 0 1px;
+}
+
+/* EMPTY STATE */
+.empty-state {
+text-align: center;
+padding: 24px 20px;
+color: var(–muted);
+font-size: 13px;
+}
+.empty-state .es-icon { font-size: 36px; margin-bottom: 8px; }
+
+/* GUIDE TIPS */
+.tip-card {
+background: var(–forest);
+border-radius: var(–radius);
+padding: 18px;
+color: var(–cream);
+margin-bottom: 10px;
+}
+.tip-card h3 {
+font-family: ‘Fraunces’, serif;
+font-size: 16px;
+font-weight: 600;
+margin-bottom: 8px;
+}
+.tip-card p { font-size: 13px; line-height: 1.5; opacity: 0.9; }
+.tip-card ul { padding-left: 16px; margin-top: 6px; }
+.tip-card ul li { font-size: 13px; line-height: 1.6; opacity: 0.9; }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(–sand); margin: 4px 0 14px; }
+
+.chip {
+display: inline-block;
+padding: 3px 9px;
+border-radius: 20px;
+font-size: 11px;
+font-weight: 500;
+}
+.chip.pecho { background: #E8F5E9; color: #2E7D32; }
+.chip.formula { background: #FFF3E0; color: #E65100; }
+.chip.pipi { background: #E3F2FD; color: #1565C0; }
+.chip.popo { background: #FFF8E1; color: #F57F17; }
+.chip.noche { background: #EDE7F6; color: #4527A0; }
+.chip.siesta { background: #E0F7FA; color: #00695C; }
+
+.timer-display {
+font-family: ‘Fraunces’, serif;
+font-size: 36px;
+font-weight: 600;
+text-align: center;
+color: var(–forest);
+letter-spacing: -1px;
+padding: 8px 0;
+}
+
+/* PROFILE PAGE */
+.profile-hero {
+background: var(–forest);
+padding: 28px 20px 24px;
+text-align: center;
+}
+.baby-avatar {
+width: 80px; height: 80px;
+background: var(–sand);
+border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+font-size: 40px;
+margin: 0 auto 12px;
+}
+.profile-name {
+font-family: ‘Fraunces’, serif;
+font-size: 24px;
+color: var(–cream);
+font-weight: 600;
+}
+.profile-sub { font-size: 13px; color: var(–sand); margin-top: 4px; }
+</style>
+
+</head>
+<body>
+
+<!-- TOP BAR -->
+
+<div class="topbar">
+  <div class="topbar-left">
+    <h1>BebéTrack</h1>
+    <p id="topbar-date">Cargando...</p>
+  </div>
+  <div class="age-badge" id="age-badge">2 días</div>
+</div>
+
+<!-- PAGES -->
+
+<!-- === HOME === -->
+
+<div class="page active" id="page-home">
+  <div class="content">
+
+```
+<div class="alert-banner hidden" id="alert-feeding">
+  ⏰ <span id="alert-feeding-text">Llevan más de 3 hrs sin comer</span>
+</div>
+
+<div class="section">
+  <div class="section-title">Hoy</div>
+  <div class="stats-row">
+    <div class="stat-card green">
+      <div class="stat-emoji">🍼</div>
+      <div class="stat-value" id="stat-feeds">0</div>
+      <div class="stat-label">Tomas hoy</div>
+      <div class="stat-sub" id="stat-last-feed">Sin registros</div>
+    </div>
+    <div class="stat-card rust">
+      <div class="stat-emoji">💧</div>
+      <div class="stat-value" id="stat-diapers">0</div>
+      <div class="stat-label">Pañales hoy</div>
+      <div class="stat-sub" id="stat-diaper-detail">—</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="stats-row">
+    <div class="stat-card clay">
+      <div class="stat-emoji">😴</div>
+      <div class="stat-value small" id="stat-sleep">0h 0m</div>
+      <div class="stat-label">Sueño hoy</div>
+      <div class="stat-sub" id="stat-sleep-ideal">Ideal: 14–17h</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-emoji">⏱️</div>
+      <div class="stat-value small" id="stat-since-feed">—</div>
+      <div class="stat-label">Última toma</div>
+      <div class="stat-sub">hace cuánto</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Registrar</div>
+  <div class="action-grid">
+    <button class="action-card forest-bg" onclick="openModal('modal-feed')">
+      <div class="ac-icon">🍼</div>
+      <div class="ac-title">Toma</div>
+      <div class="ac-sub">Pecho o fórmula</div>
+    </button>
+    <button class="action-card rust-bg" onclick="openModal('modal-diaper')">
+      <div class="ac-icon">🚼</div>
+      <div class="ac-title">Pañal</div>
+      <div class="ac-sub">Pipí o popó</div>
+    </button>
+    <button class="action-card" onclick="openModal('modal-sleep')">
+      <div class="ac-icon">🌙</div>
+      <div class="ac-title">Sueño</div>
+      <div class="ac-sub">Inicio / fin</div>
+    </button>
+    <button class="action-card" onclick="openModal('modal-growth')">
+      <div class="ac-icon">📏</div>
+      <div class="ac-title">Peso / Talla</div>
+      <div class="ac-sub">Registro de crecimiento</div>
+    </button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Últimos registros</div>
+  <div class="log-list" id="recent-log">
+    <div class="empty-state">
+      <div class="es-icon">📋</div>
+      <p>Aquí aparecerán los registros del día</p>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- === SUEÑO === -->
+
+<div class="page" id="page-sleep">
+  <div class="content">
+    <div class="section">
+      <div class="section-title">Sueño de hoy</div>
+      <div class="stats-row">
+        <div class="stat-card clay">
+          <div class="stat-emoji">😴</div>
+          <div class="stat-value small" id="sleep-total-page">0h 0m</div>
+          <div class="stat-label">Total hoy</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-emoji">🌙</div>
+          <div class="stat-value small" id="sleep-sessions">0</div>
+          <div class="stat-label">Sesiones</div>
+        </div>
+      </div>
+    </div>
+
+```
+<div class="section">
+  <div class="info-card">
+    <p>📊 Recién nacido (0–4 sem): <strong>14–17 horas</strong> totales al día, en periodos de 2–4 hrs. Sin distinguir noche de día aún.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Ideal esta noche</div>
+  <div class="stat-card" style="padding:16px">
+    <p style="font-size:13px;color:var(--muted);line-height:1.6">
+      🕘 A esta edad no hay hora "ideal" fija — el bebé dicta. Lo que sí: <strong>si no duerme más de 4h seguidas</strong>, despiértalo para comer (especialmente en semana 1-2 si está ganando peso).
+    </p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Registros de sueño</div>
+  <div id="sleep-log-list">
+    <div class="empty-state">
+      <div class="es-icon">🌙</div>
+      <p>Registra períodos de sueño desde la pantalla principal</p>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- === VACUNAS === -->
+
+<div class="page" id="page-vaccines">
+  <div class="content">
+    <div class="section">
+      <div class="info-card">
+        <p>📋 Cartilla Nacional de Salud (SSA México). Fechas calculadas desde el nacimiento del bebé.</p>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">Calendario de vacunación</div>
+      <div id="vaccine-list"></div>
+    </div>
+    <div class="section">
+      <div class="section-title">Consultas pediátricas</div>
+      <div id="consult-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- === GUÍAS === -->
+
+<div class="page" id="page-guide">
+  <div class="content">
+    <div class="section">
+      <div class="section-title">Guías por edad</div>
+
+```
+  <div class="tip-card">
+    <h3>🍼 ¿Cómo sé que se llenó? (lactancia)</h3>
+    <ul>
+      <li>Suelta el pecho por sí solo</li>
+      <li>Brazos y manos relajados (ya no apretados)</li>
+      <li>Se ve soñoliento y satisfecho</li>
+      <li>6+ pañales mojados al día = señal de buena ingesta</li>
+      <li>Escuchas que traga mientras mama</li>
+    </ul>
+  </div>
+
+  <div class="tip-card" style="background:var(--rust);margin-top:10px">
+    <h3>🚼 ¿Cuántos pañales son normales?</h3>
+    <ul>
+      <li><strong>Día 1-2:</strong> 1-2 pañales (meconio)</li>
+      <li><strong>Día 3-4:</strong> 3-4 pañales húmedos</li>
+      <li><strong>Día 5+:</strong> 6+ pañales húmedos/día</li>
+      <li><strong>Popó:</strong> 1-8 veces al día es normal en RN</li>
+    </ul>
+  </div>
+
+  <div class="tip-card" style="background:#4A5568;margin-top:10px">
+    <h3>🍼 Lactancia mixta — recomendaciones</h3>
+    <ul>
+      <li>Ofrece pecho primero, complementa con fórmula si es necesario</li>
+      <li>Fórmula estándar: ~60-90ml por toma en primeras semanas</li>
+      <li>No uses biberón justo antes de la toma de pecho</li>
+      <li>Cada 2-3 hrs aprox (8-12 veces en 24h en semana 1)</li>
+    </ul>
+  </div>
+
+  <div class="tip-card" style="background:#5C6BC0;margin-top:10px">
+    <h3>😴 Sueño seguro (ABCs)</h3>
+    <ul>
+      <li><strong>A</strong>lone — duermen solos en su cuna</li>
+      <li><strong>B</strong>ack — siempre boca arriba</li>
+      <li><strong>C</strong>rib — en superficie firme y plana</li>
+      <li>Sin cobijas sueltas, peluches ni cojines en cuna</li>
+      <li>Temperatura cuarto: 20–22°C ideal</li>
+    </ul>
+  </div>
+
+  <div class="tip-card" style="background:#00695C;margin-top:10px">
+    <h3>📏 Crecimiento normal semana 1</h3>
+    <ul>
+      <li>Es normal perder 5-10% del peso al nacer (días 1-4)</li>
+      <li>Recupera peso de nacimiento aprox día 10-14</li>
+      <li>Luego: ~150-200g por semana en primer mes</li>
+      <li>Registra peso en cada consulta</li>
+    </ul>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- === PERFIL === -->
+
+<div class="page" id="page-profile">
+  <div class="profile-hero">
+    <div class="baby-avatar">👶</div>
+    <div class="profile-name" id="profile-name">Mi Bebé</div>
+    <div class="profile-sub" id="profile-sub">Cargando...</div>
+  </div>
+  <div class="content">
+    <div class="section">
+      <div class="section-title">Datos del bebé</div>
+      <div class="stat-card" style="padding:16px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span style="font-size:13px;color:var(--muted)">Nombre</span>
+          <input id="pf-name" class="form-input" style="width:160px;padding:8px 10px;font-size:14px" placeholder="Nombre del bebé">
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span style="font-size:13px;color:var(--muted)">Fecha de nac.</span>
+          <input id="pf-dob" type="date" class="form-input" style="width:160px;padding:8px 10px;font-size:14px">
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span style="font-size:13px;color:var(--muted)">Sexo</span>
+          <select id="pf-sex" class="form-select" style="width:160px;padding:8px 10px;font-size:14px">
+            <option value="M">Niño</option>
+            <option value="F">Niña</option>
+          </select>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span style="font-size:13px;color:var(--muted)">Peso al nacer</span>
+          <input id="pf-birth-weight" type="number" step="0.01" class="form-input" style="width:160px;padding:8px 10px;font-size:14px" placeholder="kg">
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px;color:var(--muted)">Talla al nacer</span>
+          <input id="pf-birth-height" type="number" step="0.1" class="form-input" style="width:160px;padding:8px 10px;font-size:14px" placeholder="cm">
+        </div>
+      </div>
+      <button class="btn-primary" onclick="saveProfile()">Guardar perfil</button>
+    </div>
+
+```
+<div class="section">
+  <div class="section-title">Crecimiento</div>
+  <div id="growth-records">
+    <div class="empty-state">
+      <div class="es-icon">📏</div>
+      <p>Registra peso y talla desde la pantalla principal</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="padding-bottom:20px">
+  <div class="section-title">Datos</div>
+  <button class="btn-secondary" onclick="exportData()" style="margin-bottom:8px">📤 Exportar datos (JSON)</button>
+  <button class="btn-secondary" style="color:#C62828;border-color:#FFCDD2" onclick="clearAllData()">🗑️ Borrar todos los datos</button>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showPage('home',this)">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">Inicio</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('sleep',this)">
+    <span class="nav-icon">😴</span>
+    <span class="nav-label">Sueño</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('vaccines',this)">
+    <span class="nav-icon">💉</span>
+    <span class="nav-label">Vacunas</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('guide',this)">
+    <span class="nav-icon">📖</span>
+    <span class="nav-label">Guías</span>
+  </button>
+  <button class="nav-btn" onclick="showPage('profile',this)">
+    <span class="nav-icon">👶</span>
+    <span class="nav-label">Perfil</span>
+  </button>
+</nav>
+
+<!-- ===== MODALS ===== -->
+
+<!-- FEED MODAL -->
+
+<div class="modal-overlay" id="modal-feed">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🍼 Registrar toma</div>
+
+```
+<div class="form-group">
+  <label class="form-label">Tipo de toma</label>
+  <div class="toggle-group">
+    <button class="toggle-btn active" onclick="setToggle(this,'feed-type')" data-val="pecho-izq">🤱 Pecho izq.</button>
+    <button class="toggle-btn" onclick="setToggle(this,'feed-type')" data-val="pecho-der">🤱 Pecho der.</button>
+    <button class="toggle-btn" onclick="setToggle(this,'feed-type')" data-val="ambos">🤱 Ambos</button>
+    <button class="toggle-btn" onclick="setToggle(this,'feed-type')" data-val="formula">🍶 Fórmula</button>
+  </div>
+  <input type="hidden" id="feed-type" value="pecho-izq">
+</div>
+
+<div id="feed-timer-section" class="form-group">
+  <label class="form-label">Temporizador</label>
+  <div class="timer-display" id="feed-timer-display">00:00</div>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button class="toggle-btn active" id="timer-start-btn" onclick="startFeedTimer()" style="flex:1">▶ Iniciar</button>
+    <button class="toggle-btn" id="timer-stop-btn" onclick="stopFeedTimer()" style="flex:1">⏹ Detener</button>
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="form-label">Duración (min) o cantidad (ml)</label>
+  <input type="number" id="feed-amount" class="form-input" placeholder="ej. 15 min / 60 ml">
+</div>
+
+<div class="form-group">
+  <label class="form-label">Hora</label>
+  <input type="time" id="feed-time" class="form-input">
+</div>
+
+<div class="form-group">
+  <label class="form-label">Notas</label>
+  <input type="text" id="feed-notes" class="form-input" placeholder="opcional">
+</div>
+
+<div class="info-card" style="margin-bottom:14px">
+  <p>💡 RN: 8–12 tomas/día. Pecho: ~10–20 min por lado. Fórmula: ~60–90ml por toma esta semana.</p>
+</div>
+
+<button class="btn-primary" onclick="saveFeed()">Guardar toma</button>
+<button class="btn-secondary" onclick="closeModal('modal-feed')">Cancelar</button>
+```
+
+  </div>
+</div>
+
+<!-- DIAPER MODAL -->
+
+<div class="modal-overlay" id="modal-diaper">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🚼 Registrar pañal</div>
+
+```
+<div class="form-group">
+  <label class="form-label">Tipo</label>
+  <div class="toggle-group">
+    <button class="toggle-btn active" onclick="setToggle(this,'diaper-type')" data-val="pipi">💧 Pipí</button>
+    <button class="toggle-btn" onclick="setToggle(this,'diaper-type')" data-val="popo">💩 Popó</button>
+    <button class="toggle-btn" onclick="setToggle(this,'diaper-type')" data-val="mixto">💧💩 Mixto</button>
+  </div>
+  <input type="hidden" id="diaper-type" value="pipi">
+</div>
+
+<div class="form-group" id="popo-detail" style="display:none">
+  <label class="form-label">Color/consistencia (opcional)</label>
+  <select id="diaper-color" class="form-select">
+    <option value="">— Selecciona —</option>
+    <option value="negro-meconio">⚫ Negro (meconio, normal día 1-2)</option>
+    <option value="verde-transicion">🟢 Verde/café (transición día 3-4)</option>
+    <option value="amarillo-mostaza">🟡 Amarillo mostaza (normal lactancia)</option>
+    <option value="amarillo-grumoso">🟡 Amarillo grumoso (normal)</option>
+    <option value="verde-oscuro">🟢 Verde oscuro</option>
+    <option value="rojo">🔴 Rojo — consultar pediatra</option>
+    <option value="blanco">⚪ Blanco/gris — consultar pediatra</option>
+  </select>
+</div>
+
+<div class="form-group">
+  <label class="form-label">Hora</label>
+  <input type="time" id="diaper-time" class="form-input">
+</div>
+
+<div class="info-card" style="margin-bottom:14px">
+  <p>📊 Día 2 del bebé: espera 2-3 pañales húmedos. La producción aumenta en los próximos días. ¡El meconio negro/verde es completamente normal!</p>
+</div>
+
+<button class="btn-primary" onclick="saveDiaper()">Guardar pañal</button>
+<button class="btn-secondary" onclick="closeModal('modal-diaper')">Cancelar</button>
+```
+
+  </div>
+</div>
+
+<!-- SLEEP MODAL -->
+
+<div class="modal-overlay" id="modal-sleep">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🌙 Registrar sueño</div>
+
+```
+<div class="form-group">
+  <label class="form-label">Tipo</label>
+  <div class="toggle-group">
+    <button class="toggle-btn active" onclick="setToggle(this,'sleep-type')" data-val="noche">🌙 Noche</button>
+    <button class="toggle-btn" onclick="setToggle(this,'sleep-type')" data-val="siesta">☀️ Siesta</button>
+  </div>
+  <input type="hidden" id="sleep-type" value="noche">
+</div>
+
+<div class="form-group">
+  <label class="form-label">Se durmió</label>
+  <input type="time" id="sleep-start" class="form-input">
+</div>
+
+<div class="form-group">
+  <label class="form-label">Se despertó</label>
+  <input type="time" id="sleep-end" class="form-input">
+</div>
+
+<div id="sleep-active-wrap" style="display:none" class="form-group">
+  <div class="info-card">
+    <p>⏱️ Sueño activo — toca "Despertó" cuando abra los ojos</p>
+  </div>
+  <button class="btn-primary" style="margin-top:8px;background:var(--rust)" onclick="wakeUpBaby()">👀 Se despertó</button>
+</div>
+
+<button class="btn-primary" onclick="saveSleep()">Guardar sueño</button>
+<button class="btn-secondary" onclick="closeModal('modal-sleep')">Cancelar</button>
+```
+
+  </div>
+</div>
+
+<!-- GROWTH MODAL -->
+
+<div class="modal-overlay" id="modal-growth">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📏 Registrar crecimiento</div>
+
+```
+<div class="form-group">
+  <label class="form-label">Peso (kg)</label>
+  <input type="number" id="growth-weight" step="0.01" class="form-input" placeholder="ej. 3.25">
+</div>
+
+<div class="form-group">
+  <label class="form-label">Talla (cm)</label>
+  <input type="number" id="growth-height" step="0.1" class="form-input" placeholder="ej. 50.5">
+</div>
+
+<div class="form-group">
+  <label class="form-label">Perímetro cefálico (cm) — opcional</label>
+  <input type="number" id="growth-pc" step="0.1" class="form-input" placeholder="ej. 34.0">
+</div>
+
+<div class="form-group">
+  <label class="form-label">Fecha</label>
+  <input type="date" id="growth-date" class="form-input">
+</div>
+
+<div class="info-card" style="margin-bottom:14px">
+  <p>💡 Es normal perder 5-10% del peso al nacer en los primeros días. Se recupera alrededor del día 10-14.</p>
+</div>
+
+<button class="btn-primary" onclick="saveGrowth()">Guardar medición</button>
+<button class="btn-secondary" onclick="closeModal('modal-growth')">Cancelar</button>
+```
+
+  </div>
+</div>
+
+<script>
+// ===== DATA LAYER (localStorage — intercambiable con Sheets API) =====
+const DB = {
+  get: (key) => JSON.parse(localStorage.getItem('bt_'+key) || '[]'),
+  getObj: (key) => JSON.parse(localStorage.getItem('bt_'+key) || '{}'),
+  set: (key, val) => localStorage.setItem('bt_'+key, JSON.stringify(val)),
+  push: (key, item) => {
+    const arr = DB.get(key);
+    arr.push(item);
+    DB.set(key, arr);
+    return arr;
+  }
+};
+
+// ===== INIT =====
+let feedTimerInterval = null;
+let feedTimerStart = null;
+let feedTimerSeconds = 0;
+
+function init() {
+  const now = new Date();
+
+  // Set default times
+  document.getElementById('feed-time').value = now.toTimeString().slice(0,5);
+  document.getElementById('diaper-time').value = now.toTimeString().slice(0,5);
+  document.getElementById('sleep-start').value = now.toTimeString().slice(0,5);
+  document.getElementById('growth-date').value = now.toISOString().slice(0,10);
+
+  // Load profile
+  const profile = DB.getObj('profile');
+  if (profile.dob) {
+    document.getElementById('pf-name').value = profile.name || '';
+    document.getElementById('pf-dob').value = profile.dob;
+    document.getElementById('pf-sex').value = profile.sex || 'M';
+    document.getElementById('pf-birth-weight').value = profile.birthWeight || '';
+    document.getElementById('pf-birth-height').value = profile.birthHeight || '';
+  } else {
+    // default: born May 11
+    document.getElementById('pf-dob').value = '2025-05-11';
+    DB.set('profile', { dob: '2025-05-11', name: 'Bebé', sex: 'M', birthWeight: '', birthHeight: '' });
+  }
+
+  updateTopBar();
+  renderHome();
+  renderVaccines();
+  renderSleepPage();
+  renderGrowthRecords();
+
+  // Diaper color show/hide
+  document.getElementById('diaper-type').addEventListener('change', e => {
+    document.getElementById('popo-detail').style.display =
+      (e.target.value === 'popo' || e.target.value === 'mixto') ? 'block' : 'none';
+  });
+
+  // Auto-refresh every minute
+  setInterval(() => {
+    updateTopBar();
+    renderHome();
+  }, 60000);
+}
+
+function getProfile() {
+  const p = DB.getObj('profile');
+  return {
+    name: p.name || 'Bebé',
+    dob: p.dob || '2025-05-11',
+    sex: p.sex || 'M',
+    birthWeight: p.birthWeight,
+    birthHeight: p.birthHeight
+  };
+}
+
+function getDaysOld(dob) {
+  const birth = new Date(dob + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  return Math.floor((today - birth) / 86400000);
+}
+
+function updateTopBar() {
+  const p = getProfile();
+  const days = getDaysOld(p.dob);
+  const now = new Date();
+  const diasSemana = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  document.getElementById('topbar-date').textContent =
+    `${diasSemana[now.getDay()]}, ${now.getDate()} ${meses[now.getMonth()]}`;
+
+  let ageStr = '';
+  if (days < 30) ageStr = days + ' días';
+  else if (days < 365) ageStr = Math.floor(days/30.4) + ' meses';
+  else ageStr = (days/365).toFixed(1) + ' años';
+  document.getElementById('age-badge').textContent = ageStr;
+
+  document.getElementById('profile-name').textContent = p.name || 'Bebé';
+  document.getElementById('profile-sub').textContent = `${days} días de vida · ${p.sex === 'F' ? 'Niña' : 'Niño'}`;
+}
+
+// ===== HOME RENDER =====
+function renderHome() {
+  const today = new Date().toISOString().slice(0,10);
+
+  // Feeds today
+  const feeds = DB.get('feeds').filter(f => f.date === today);
+  document.getElementById('stat-feeds').textContent = feeds.length;
+  if (feeds.length > 0) {
+    const last = feeds[feeds.length-1];
+    document.getElementById('stat-last-feed').textContent = `Última: ${last.time}`;
+    // Time since last feed
+    const [h,m] = last.time.split(':').map(Number);
+    const lastTs = new Date(); lastTs.setHours(h,m,0,0);
+    const diffMin = Math.floor((new Date() - lastTs) / 60000);
+    const diffH = Math.floor(diffMin / 60);
+    const diffM = diffMin % 60;
+    const sinceStr = diffH > 0 ? `hace ${diffH}h ${diffM}m` : `hace ${diffMin}m`;
+    document.getElementById('stat-since-feed').textContent = sinceStr;
+
+    // Alert if > 3hrs
+    const alertBanner = document.getElementById('alert-feeding');
+    if (diffMin > 180) {
+      alertBanner.classList.remove('hidden');
+      document.getElementById('alert-feeding-text').textContent =
+        `Llevan ${diffH}h ${diffM}m sin comer — hora de una toma`;
+    } else {
+      alertBanner.classList.add('hidden');
+    }
+  } else {
+    document.getElementById('stat-since-feed').textContent = '—';
+    document.getElementById('alert-feeding').classList.add('hidden');
+  }
+
+  // Diapers today
+  const diapers = DB.get('diapers').filter(d => d.date === today);
+  document.getElementById('stat-diapers').textContent = diapers.length;
+  const pipis = diapers.filter(d => d.type === 'pipi').length;
+  const popos = diapers.filter(d => d.type === 'popo').length;
+  const mixtos = diapers.filter(d => d.type === 'mixto').length;
+  document.getElementById('stat-diaper-detail').textContent =
+    diapers.length > 0 ? `💧${pipis+mixtos} 💩${popos+mixtos}` : '—';
+
+  // Sleep today
+  const sleeps = DB.get('sleeps').filter(s => s.date === today);
+  let totalSleepMin = 0;
+  sleeps.forEach(s => { if (s.durationMin) totalSleepMin += s.durationMin; });
+  const sh = Math.floor(totalSleepMin/60), sm = totalSleepMin%60;
+  document.getElementById('stat-sleep').textContent = `${sh}h ${sm}m`;
+  document.getElementById('sleep-total-page').textContent = `${sh}h ${sm}m`;
+  document.getElementById('sleep-sessions').textContent = sleeps.length;
+
+  // Recent log
+  const allEvents = [
+    ...DB.get('feeds').map(f => ({...f, _type:'feed'})),
+    ...DB.get('diapers').map(d => ({...d, _type:'diaper'})),
+    ...DB.get('sleeps').map(s => ({...s, _type:'sleep'}))
+  ].filter(e => e.date === today)
+   .sort((a,b) => b.time > a.time ? 1 : -1)
+   .slice(0,8);
+
+  const logEl = document.getElementById('recent-log');
+  if (allEvents.length === 0) {
+    logEl.innerHTML = `<div class="empty-state"><div class="es-icon">📋</div><p>Aquí aparecerán los registros del día</p></div>`;
+    return;
+  }
+  logEl.innerHTML = allEvents.map(e => {
+    let icon='', title='', detail='', chip='';
+    if (e._type === 'feed') {
+      icon = '🍼'; title = 'Toma';
+      chip = e.feedType === 'formula'
+        ? `<span class="chip formula">Fórmula</span>`
+        : `<span class="chip pecho">Pecho ${e.feedType.replace('pecho-','')}</span>`;
+      detail = e.amount ? `${e.amount}${e.feedType==='formula'?'ml':'min'}` : '';
+    } else if (e._type === 'diaper') {
+      icon = '🚼'; title = 'Pañal';
+      chip = e.type === 'pipi'
+        ? `<span class="chip pipi">Pipí</span>`
+        : e.type === 'popo'
+        ? `<span class="chip popo">Popó</span>`
+        : `<span class="chip popo">Mixto</span>`;
+    } else {
+      icon = '😴'; title = 'Sueño';
+      chip = e.sleepType === 'noche'
+        ? `<span class="chip noche">Noche</span>`
+        : `<span class="chip siesta">Siesta</span>`;
+      detail = e.durationMin ? `${Math.floor(e.durationMin/60)}h ${e.durationMin%60}m` : '';
+    }
+    return `
+      <div class="log-item">
+        <div class="log-item-left">
+          <div class="log-icon ${e._type}">${icon}</div>
+          <div>
+            <div class="log-title">${title} ${chip}</div>
+            <div class="log-time">${e.time}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center">
+          <div class="log-right">${detail}</div>
+          <button class="log-delete" onclick="deleteEntry('${e._type}','${e.id}')">×</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ===== SLEEP PAGE =====
+function renderSleepPage() {
+  const today = new Date().toISOString().slice(0,10);
+  const sleeps = DB.get('sleeps').filter(s => s.date === today);
+  const listEl = document.getElementById('sleep-log-list');
+  if (sleeps.length === 0) {
+    listEl.innerHTML = `<div class="empty-state"><div class="es-icon">🌙</div><p>Registra períodos de sueño desde la pantalla principal</p></div>`;
+    return;
+  }
+  listEl.innerHTML = sleeps.map(s => `
+    <div class="sleep-bar-wrap">
+      <div class="sleep-bar-header">
+        <span>${s.time} — ${s.endTime || '...'}</span>
+        <span>${s.durationMin ? Math.floor(s.durationMin/60)+'h '+s.durationMin%60+'m' : 'activo'}</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted)">${s.sleepType === 'noche' ? '🌙 Noche' : '☀️ Siesta'}</div>
+    </div>`).join('');
+}
+
+// ===== VACCINES =====
+function renderVaccines() {
+  const p = getProfile();
+  const dob = new Date(p.dob + 'T00:00:00');
+  const completed = DB.getObj('vaccines_done');
+
+  // SSA Mexico vaccination schedule
+  const schedule = [
+    { id:'bcg', name:'BCG (tuberculosis)', ageMonths:0, ageDays:0, label:'Al nacer', note:'Una sola dosis' },
+    { id:'hep_b_0', name:'Hepatitis B (1ª dosis)', ageMonths:0, ageDays:0, label:'Al nacer', note:'' },
+    { id:'hep_b_1', name:'Hepatitis B (2ª dosis)', ageMonths:2, label:'2 meses', note:'' },
+    { id:'penta_1', name:'Pentavalente (1ª dosis)', ageMonths:2, label:'2 meses', note:'DPT+HiB+HepB' },
+    { id:'polio_1', name:'Polio (1ª dosis)', ageMonths:2, label:'2 meses', note:'' },
+    { id:'rota_1', name:'Rotavirus (1ª dosis)', ageMonths:2, label:'2 meses', note:'Vía oral' },
+    { id:'neumo_1', name:'Neumococo (1ª dosis)', ageMonths:2, label:'2 meses', note:'' },
+    { id:'penta_2', name:'Pentavalente (2ª dosis)', ageMonths:4, label:'4 meses', note:'' },
+    { id:'polio_2', name:'Polio (2ª dosis)', ageMonths:4, label:'4 meses', note:'' },
+    { id:'rota_2', name:'Rotavirus (2ª dosis)', ageMonths:4, label:'4 meses', note:'' },
+    { id:'neumo_2', name:'Neumococo (2ª dosis)', ageMonths:4, label:'4 meses', note:'' },
+    { id:'penta_3', name:'Pentavalente (3ª dosis)', ageMonths:6, label:'6 meses', note:'' },
+    { id:'polio_3', name:'Polio (3ª dosis)', ageMonths:6, label:'6 meses', note:'' },
+    { id:'rota_3', name:'Rotavirus (3ª dosis)', ageMonths:6, label:'6 meses', note:'' },
+    { id:'influenza_1', name:'Influenza (1ª dosis)', ageMonths:6, label:'6 meses', note:'Anual' },
+    { id:'srp_1', name:'SRP (sarampión, rubéola, parotiditis)', ageMonths:12, label:'12 meses', note:'' },
+    { id:'neumo_ref', name:'Neumococo (refuerzo)', ageMonths:12, label:'12 meses', note:'' },
+    { id:'varicela', name:'Varicela', ageMonths:12, label:'12 meses', note:'' },
+    { id:'hep_a', name:'Hepatitis A', ageMonths:12, label:'12 meses', note:'' },
+    { id:'penta_ref', name:'Pentavalente (refuerzo)', ageMonths:18, label:'18 meses', note:'' },
+    { id:'srp_2', name:'SRP (2ª dosis)', ageMonths:18, label:'18 meses', note:'' },
+    { id:'dpt_ref', name:'DPT (refuerzo)', ageMonths:48, label:'4 años', note:'' },
+    { id:'polio_ref', name:'Polio (refuerzo)', ageMonths:48, label:'4 años', note:'' },
+  ];
+
+  const today = new Date();
+  const listEl = document.getElementById('vaccine-list');
+
+  listEl.innerHTML = schedule.map(v => {
+    const doseDate = new Date(dob);
+    doseDate.setMonth(doseDate.getMonth() + (v.ageMonths || 0));
+    if (v.ageDays) doseDate.setDate(doseDate.getDate() + v.ageDays);
+
+    const diffDays = Math.ceil((doseDate - today) / 86400000);
+    const isDone = completed[v.id];
+    let dotClass = 'future', statusText = '';
+
+    if (isDone) { dotClass = 'done'; statusText = '✓ Aplicada'; }
+    else if (diffDays < 0) { dotClass = 'next'; statusText = `⚠️ Vencida (${Math.abs(diffDays)}d)`; }
+    else if (diffDays === 0) { dotClass = 'next'; statusText = '📌 Hoy'; }
+    else if (diffDays <= 30) { dotClass = 'upcoming'; statusText = `en ${diffDays} días`; }
+    else {
+      const m = doseDate.getMonth()+1, d = doseDate.getDate(), y = doseDate.getFullYear();
+      statusText = `${d}/${m}/${y}`;
+    }
+
+    return `
+      <div class="vaccine-item">
+        <div class="vax-dot ${dotClass}"></div>
+        <div class="vax-info">
+          <div class="vax-name">${v.name}</div>
+          <div class="vax-date">${v.label} · ${statusText}${v.note ? ' · '+v.note : ''}</div>
+        </div>
+        <button class="vax-check ${isDone?'done':''}" onclick="toggleVaccine('${v.id}',this)">
+          ${isDone ? '✓' : 'Marcar'}
+        </button>
+      </div>`;
+  }).join('');
+
+  // Consultas pediátricas
+  const consults = [
+    { label: 'Recién nacido (3–5 días)', ageMonths: 0, ageDays: 4 },
+    { label: 'Primera consulta (1 mes)', ageMonths: 1 },
+    { label: 'Segunda consulta (2 meses)', ageMonths: 2 },
+    { label: 'Tercera consulta (4 meses)', ageMonths: 4 },
+    { label: 'Cuarta consulta (6 meses)', ageMonths: 6 },
+    { label: 'Quinta consulta (9 meses)', ageMonths: 9 },
+    { label: 'Sexta consulta (12 meses)', ageMonths: 12 },
+    { label: 'Séptima consulta (18 meses)', ageMonths: 18 },
+    { label: 'Octava consulta (24 meses)', ageMonths: 24 },
+  ];
+
+  document.getElementById('consult-list').innerHTML = consults.map(c => {
+    const d = new Date(dob);
+    d.setMonth(d.getMonth() + (c.ageMonths || 0));
+    if (c.ageDays) d.setDate(d.getDate() + (c.ageDays||0));
+    const diff = Math.ceil((d - today) / 86400000);
+    let status = '';
+    if (diff < 0) status = '⚠️ Vencida';
+    else if (diff === 0) status = '📌 Hoy';
+    else if (diff <= 14) status = `en ${diff} días`;
+    else status = `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+
+    return `<div class="vaccine-item">
+      <div class="vax-dot ${diff<=0?'next':diff<=14?'upcoming':'future'}"></div>
+      <div class="vax-info">
+        <div class="vax-name">${c.label}</div>
+        <div class="vax-date">${status}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== GROWTH RECORDS =====
+function renderGrowthRecords() {
+  const records = DB.get('growth');
+  const el = document.getElementById('growth-records');
+  if (records.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="es-icon">📏</div><p>Registra peso y talla desde la pantalla principal</p></div>`;
+    return;
+  }
+  el.innerHTML = records.slice(-5).reverse().map(r => `
+    <div class="log-item" style="margin-bottom:8px">
+      <div class="log-item-left">
+        <div class="log-icon food">📏</div>
+        <div>
+          <div class="log-title">${r.weight ? r.weight+'kg' : ''} ${r.height ? '· '+r.height+'cm' : ''}</div>
+          <div class="log-time">${r.date}</div>
+        </div>
+      </div>
+      <button class="log-delete" onclick="deleteEntry('growth','${r.id}')">×</button>
+    </div>`).join('');
+}
+
+// ===== SAVE FUNCTIONS =====
+function saveFeed() {
+  const feedType = document.getElementById('feed-type').value;
+  const amount = document.getElementById('feed-amount').value;
+  const time = document.getElementById('feed-time').value;
+  const notes = document.getElementById('feed-notes').value;
+  const date = new Date().toISOString().slice(0,10);
+
+  stopFeedTimer();
+
+  DB.push('feeds', {
+    id: Date.now().toString(),
+    date, time, feedType,
+    amount: amount || feedTimerSeconds > 0 ? (feedTimerSeconds > 0 ? Math.round(feedTimerSeconds/60) : amount) : '',
+    notes
+  });
+
+  feedTimerSeconds = 0;
+  document.getElementById('feed-timer-display').textContent = '00:00';
+  document.getElementById('feed-amount').value = '';
+  document.getElementById('feed-notes').value = '';
+
+  closeModal('modal-feed');
+  renderHome();
+}
+
+function saveDiaper() {
+  const type = document.getElementById('diaper-type').value;
+  const time = document.getElementById('diaper-time').value;
+  const color = document.getElementById('diaper-color').value;
+  const date = new Date().toISOString().slice(0,10);
+
+  DB.push('diapers', { id: Date.now().toString(), date, time, type, color });
+
+  closeModal('modal-diaper');
+  renderHome();
+}
+
+function saveSleep() {
+  const sleepType = document.getElementById('sleep-type').value;
+  const start = document.getElementById('sleep-start').value;
+  const end = document.getElementById('sleep-end').value;
+  const date = new Date().toISOString().slice(0,10);
+
+  let durationMin = null;
+  if (start && end) {
+    const [sh,sm] = start.split(':').map(Number);
+    const [eh,em] = end.split(':').map(Number);
+    let mins = (eh*60+em) - (sh*60+sm);
+    if (mins < 0) mins += 1440; // crosses midnight
+    durationMin = mins;
+  }
+
+  DB.push('sleeps', {
+    id: Date.now().toString(),
+    date, time: start, endTime: end, sleepType, durationMin
+  });
+
+  closeModal('modal-sleep');
+  renderHome();
+  renderSleepPage();
+}
+
+function saveGrowth() {
+  const weight = document.getElementById('growth-weight').value;
+  const height = document.getElementById('growth-height').value;
+  const pc = document.getElementById('growth-pc').value;
+  const date = document.getElementById('growth-date').value;
+
+  if (!weight && !height) { alert('Ingresa al menos peso o talla'); return; }
+
+  DB.push('growth', { id: Date.now().toString(), date, weight, height, pc });
+
+  closeModal('modal-growth');
+  renderGrowthRecords();
+}
+
+function saveProfile() {
+  const name = document.getElementById('pf-name').value;
+  const dob = document.getElementById('pf-dob').value;
+  const sex = document.getElementById('pf-sex').value;
+  const birthWeight = document.getElementById('pf-birth-weight').value;
+  const birthHeight = document.getElementById('pf-birth-height').value;
+
+  DB.set('profile', { name, dob, sex, birthWeight, birthHeight });
+  updateTopBar();
+  renderVaccines();
+  alert('✅ Perfil guardado');
+}
+
+// ===== FEED TIMER =====
+function startFeedTimer() {
+  if (feedTimerInterval) return;
+  feedTimerStart = Date.now() - feedTimerSeconds * 1000;
+  feedTimerInterval = setInterval(() => {
+    feedTimerSeconds = Math.floor((Date.now() - feedTimerStart) / 1000);
+    const m = Math.floor(feedTimerSeconds/60).toString().padStart(2,'0');
+    const s = (feedTimerSeconds%60).toString().padStart(2,'0');
+    document.getElementById('feed-timer-display').textContent = m+':'+s;
+    // Auto-fill amount
+    document.getElementById('feed-amount').value = Math.round(feedTimerSeconds/60);
+  }, 1000);
+}
+function stopFeedTimer() {
+  clearInterval(feedTimerInterval);
+  feedTimerInterval = null;
+}
+
+// ===== VACCINE TOGGLE =====
+function toggleVaccine(id, btn) {
+  const done = DB.getObj('vaccines_done');
+  if (done[id]) {
+    delete done[id];
+    btn.textContent = 'Marcar';
+    btn.classList.remove('done');
+  } else {
+    done[id] = new Date().toISOString();
+    btn.textContent = '✓';
+    btn.classList.add('done');
+  }
+  DB.set('vaccines_done', done);
+}
+
+// ===== DELETE =====
+function deleteEntry(type, id) {
+  const map = { feed:'feeds', diaper:'diapers', sleep:'sleeps', growth:'growth' };
+  const key = map[type] || type;
+  const arr = DB.get(key).filter(e => e.id !== id);
+  DB.set(key, arr);
+  renderHome();
+  renderSleepPage();
+  renderGrowthRecords();
+}
+
+// ===== MODALS =====
+function openModal(id) {
+  // Reset times to now
+  const now = new Date();
+  const timeStr = now.toTimeString().slice(0,5);
+  if (id === 'modal-feed') document.getElementById('feed-time').value = timeStr;
+  if (id === 'modal-diaper') document.getElementById('diaper-time').value = timeStr;
+  if (id === 'modal-sleep') document.getElementById('sleep-start').value = timeStr;
+
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// ===== TOGGLE BUTTONS =====
+function setToggle(btn, hiddenId) {
+  const parent = btn.closest('.toggle-group');
+  parent.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(hiddenId).value = btn.dataset.val;
+
+  // Show/hide popo detail
+  if (hiddenId === 'diaper-type') {
+    const v = btn.dataset.val;
+    document.getElementById('popo-detail').style.display =
+      (v === 'popo' || v === 'mixto') ? 'block' : 'none';
+  }
+}
+
+// ===== NAVIGATION =====
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ===== EXPORT =====
+function exportData() {
+  const data = {
+    profile: DB.getObj('profile'),
+    feeds: DB.get('feeds'),
+    diapers: DB.get('diapers'),
+    sleeps: DB.get('sleeps'),
+    growth: DB.get('growth'),
+    vaccines_done: DB.getObj('vaccines_done'),
+    exported_at: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `bebetrack-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+function clearAllData() {
+  if (confirm('⚠️ ¿Borrar TODOS los datos? Esta acción no se puede deshacer.')) {
+    ['feeds','diapers','sleeps','growth','profile','vaccines_done'].forEach(k => localStorage.removeItem('bt_'+k));
+    location.reload();
+  }
+}
+
+// ===== WAKE UP BABY (sleep active) =====
+function wakeUpBaby() {
+  const now = new Date().toTimeString().slice(0,5);
+  document.getElementById('sleep-end').value = now;
+}
+
+// ===== START =====
+init();
+</script>
+
+</body>
+</html>
